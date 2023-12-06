@@ -1,7 +1,7 @@
 #include <AFMotor.h>
 
-AF_DCMotor MotorL(1);  // Motor for drive Left on M1
-AF_DCMotor MotorR(2);  // Motor for drive Right on M2
+AF_DCMotor MotorL(2);  // Motor for drive Left on M1
+AF_DCMotor MotorR(1);  // Motor for drive Right on M2
 
 //ultrasonic setup:
 const int trigPin = A0; // trig pin connected to Arduino's pin A0
@@ -100,6 +100,6 @@ int turn()
     // delayed so we know we are completing the turn 
     MotorL.run(FORWARD);
     MotorR.run(BACKWARD);
-    
+    delay(1000);
 
 }
