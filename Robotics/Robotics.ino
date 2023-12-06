@@ -48,16 +48,21 @@ void loop() {
   if(swt == LOW && distanceCm <= distance){
     Serial.println("Switch status: " + swt);
     // do nothing but wait as we are in range and have a soda 
-
+    MotorL.setSpeed(0);
+    MotorR.setSpeed(0);
   }
   // if we have a soda but are not in range we go forward until we are in range 
-  else if(swt == LOW && distanceCm >= distance)
+  else if(distanceCm >= distance)
   {
+    MotorL.setSpeed(255);
+    MotorR.setSpeed(255);
     move();
   }
   // if we dont have a soda and are in range we turn 
   else if(swt == HIGH && distanceCm <= distance)
   {
+    MotorL.setSpeed(255);
+    MotorR.setSpeed(255);
     turn();
   }
 }
@@ -83,6 +88,7 @@ int getDistance() {
 // move function to be called to move robot forward 
 int move()
 {
+    Serial.println("Moving!!");
     MotorL.run(FORWARD);
     MotorR.run(FORWARD);
 
@@ -90,9 +96,10 @@ int move()
 // turn function to be called when robot needs to complete a 180
 int turn()
 {
+    Serial.println("turning!!");
     // delayed so we know we are completing the turn 
     MotorL.run(FORWARD);
     MotorR.run(BACKWARD);
-    delay(1000);
+    
 
 }
