@@ -1,32 +1,31 @@
 #include <AFMotor.h>
 
-AF_DCMotor MotorL(2);  // Motor for drive Left on M1
-AF_DCMotor MotorR(1);  // Motor for drive Right on M2
+
+AF_DCMotor MotorL(3);  // Motor for drive Left on M3
+AF_DCMotor MotorR(4);  // Motor for drive Right on M4
 
 //ultrasonic setup:
 const int trigPin = A0; // trig pin connected to Arduino's pin A0
 const int echoPin = A1; // echo pin connected to Arduino's pin A1
 // Switch set up 
 const int switchPin = A2;
+// State flags for testing 
+const int state_1 = 0;
 
+int state_3 = 0;
 int distance = 10;
-
 long duration;
 int distanceCm = 0;
 
 void setup() {
   // Ran before everything else 
   Serial.begin(115200);
-  Serial.println("Hunter Leboeuf and Aurthor Upfield Soda bringer");
+  Serial.println("Hunter Leboeuf and Arthor Upfield Soda bringer");
   pinMode(trigPin, OUTPUT);  // Sets the trigPin as an Output
   pinMode(echoPin, INPUT);   // Sets the echoPin as an Input
   pinMode(switchPin,INPUT_PULLUP);
-  MotorL.setSpeed(255);
-  MotorR.setSpeed(255);
-  
-  // turn on motor
-  MotorL.run(RELEASE);
-  MotorR.run(RELEASE);
+
+
 
 
 
@@ -34,13 +33,14 @@ void setup() {
 
 // main program loop
 void loop() {
+  // turn on motor
 
 
   // constantly get distance to make sure we dont over shoot target location
   distanceCm=getDistance(); 
   // get the reading from the switch
   int swt = digitalRead(switchPin);
-  Serial.println(distanceCm);
+
   // Set to low too lazy to change wires around :/
   // Low == soda on 
   // High  == Soda off 
@@ -49,22 +49,25 @@ void loop() {
     Serial.println("Switch status: " + swt);
     // do nothing but wait as we are in range and have a soda 
     MotorL.setSpeed(0);
-    MotorR.setSpeed(0);
+    MotorR.setSpeed(0);  
+    MotorL.run(RELEASE);
+    MotorR.run(RELEASE);
   }
-  // if we have a soda but are not in range we go forward until we are in range 
+  // if we are not in range we go forward until we are in range 
   else if(distanceCm >= distance)
   {
-    MotorL.setSpeed(255);
-    MotorR.setSpeed(255);
     move();
   }
   // if we dont have a soda and are in range we turn 
   else if(swt == HIGH && distanceCm <= distance)
   {
-    MotorL.setSpeed(255);
-    MotorR.setSpeed(255);
+
     turn();
+  
+
   }
+
+  
 }
 
 
@@ -88,6 +91,8 @@ int getDistance() {
 // move function to be called to move robot forward 
 int move()
 {
+    MotorL.setSpeed(255);
+    MotorR.setSpeed(255);
     Serial.println("Moving!!");
     MotorL.run(FORWARD);
     MotorR.run(FORWARD);
@@ -97,9 +102,15 @@ int move()
 int turn()
 {
     Serial.println("turning!!");
+    //--------------------------------
+    MotorL.setSpeed(255);
+    MotorR.setSpeed(255);
     // delayed so we know we are completing the turn 
     MotorL.run(FORWARD);
     MotorR.run(BACKWARD);
-    delay(1000);
+    // delay for 2 seconds
+    delayMicroseconds(2000);
 
+    state_3 = 0;
+    // ---------------------------------
 }
