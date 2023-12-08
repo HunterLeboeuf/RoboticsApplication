@@ -1,8 +1,9 @@
 #include <AFMotor.h>
+#include <Arduino.h>
 
 
-AF_DCMotor MotorL(3);  // Motor for drive Left on M3
-AF_DCMotor MotorR(4);  // Motor for drive Right on M4
+AF_DCMotor MotorL(4);  // Motor for drive Left on M3
+AF_DCMotor MotorR(3);  // Motor for drive Right on M4
 
 //ultrasonic setup:
 const int trigPin = A0; // trig pin connected to Arduino's pin A0
@@ -13,7 +14,7 @@ const int switchPin = A2;
 const int state_1 = 0;
 
 int state_3 = 0;
-int distance = 10;
+int distance = 20;
 long duration;
 int distanceCm = 0;
 
@@ -26,8 +27,10 @@ void setup() {
   pinMode(switchPin,INPUT_PULLUP);
 
 
-
-
+    MotorL.setSpeed(225);
+    MotorR.setSpeed(225);
+    MotorL.run(RELEASE);
+    MotorR.run(RELEASE); 
 
 }
 
@@ -41,27 +44,28 @@ void loop() {
   // get the reading from the switch
   int swt = digitalRead(switchPin);
 
-  // Set to low too lazy to change wires around :/
+  Serial.println(distanceCm);
+
   // Low == soda on 
   // High  == Soda off 
   // if we have soda and are in range we wait until someone takes soda 
   if(swt == LOW && distanceCm <= distance){
     Serial.println("Switch status: " + swt);
     // do nothing but wait as we are in range and have a soda 
-    MotorL.setSpeed(0);
-    MotorR.setSpeed(0);  
-    MotorL.run(RELEASE);
-    MotorR.run(RELEASE);
-  }
+      MotorL.run(RELEASE);
+      MotorR.run(RELEASE); 
+
+  } 
   // if we are not in range we go forward until we are in range 
   else if(distanceCm >= distance)
   {
+
     move();
   }
   // if we dont have a soda and are in range we turn 
   else if(swt == HIGH && distanceCm <= distance)
   {
-
+    
     turn();
   
 
@@ -91,25 +95,25 @@ int getDistance() {
 // move function to be called to move robot forward 
 int move()
 {
-    MotorL.setSpeed(255);
-    MotorR.setSpeed(255);
+
     Serial.println("Moving!!");
-    MotorL.run(FORWARD);
+    MotorL.run(BACKWARD);
     MotorR.run(FORWARD);
 
 }
 // turn function to be called when robot needs to complete a 180
 int turn()
 {
+    
     Serial.println("turning!!");
     //--------------------------------
-    MotorL.setSpeed(255);
-    MotorR.setSpeed(255);
+
     // delayed so we know we are completing the turn 
-    MotorL.run(FORWARD);
     MotorR.run(BACKWARD);
+    MotorL.run(BACKWARD);
+    
     // delay for 2 seconds
-    delayMicroseconds(2000);
+   
 
     state_3 = 0;
     // ---------------------------------
